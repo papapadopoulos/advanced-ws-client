@@ -1,0 +1,41 @@
+#container {
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 30px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+
+.messagesContainer {
+    margin-top: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}  
+.connectionsContainer {
+    margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}  
+
+.pull-down {
+    margin-top:25px;
+    align-self: flex-end;
+}
+
+.stick-bot {
+    display: flex;
+}
+
+.panelHeading {    
+    margin-top:20px;
+}
+
+.full-width td {
+    margin-right:50px;
+    width: inherit;
+    display: block;
+}
+
+.zeropadding {
+    padding:0px;
+}
