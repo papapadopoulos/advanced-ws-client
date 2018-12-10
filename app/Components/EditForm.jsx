@@ -22,17 +22,33 @@ const EditForm = ({
   itemList,
   selectItem,
   saveOrEdit,
-  changeEditType
+  changeEditType,
+  handleDeleteItem
 }) => {
+  const popoverFocus = (
+    <Popover id="popover-trigger-focus">
+      Right click to delete!
+    </Popover>
+  );
   return (
     <>
       <h4>{title}</h4>
       <ListGroup bsClass="connectionsContainer">
         {itemList &&
           itemList.map(s => (
-            <ListGroupItem key={s} onClick={() => selectItem(s)}>
-              {s}
-            </ListGroupItem>
+            <OverlayTrigger
+              key={s}
+              trigger={["hover", "focus"]}
+              placement="top"
+              overlay={popoverFocus}
+            >
+              <ListGroupItem
+                onClick={e => selectItem(e, s)}
+                onContextMenu={e => handleDeleteItem(e, itemTitle)}
+              >
+                {s}
+              </ListGroupItem>
+            </OverlayTrigger>
           ))}
       </ListGroup>
 

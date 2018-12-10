@@ -1,6 +1,5 @@
 import React from "react";
 import Prompt from "./Modal/Prompt";
-import ConnectionsForm from "./ConnectionsForm";
 import EditForm from "./EditForm";
 
 class Menu extends React.Component {
@@ -34,20 +33,40 @@ class Menu extends React.Component {
     });
   };
 
-  editConnection = connection => {
-    this.setState({
-      connection: connection,
-      nowEditing: connection,
-      editType: "connection"
-    });
+  editConnection = (e, connection) => {
+    if (this.state.nowEditing === connection) {
+      e.target.blur();
+      this.setState({
+        connection: "",
+        nowEditing: "",
+        editType: "connection"
+      });
+    } else {
+      e.target.focus();
+      this.setState({
+        connection: connection,
+        nowEditing: connection,
+        editType: "connection"
+      });
+    }
   };
 
-  editTemplate = template => {
-    this.setState({
-      template: template,
-      nowEditing: template,
-      editType: "template"
-    });
+  editTemplate = (e, template) => {
+    if (this.state.nowEditing === template) {
+      e.target.blur();
+      this.setState({
+        template: "",
+        nowEditing: "",
+        editType: "template"
+      });
+    } else {
+      e.target.focus();
+      this.setState({
+        template: template,
+        nowEditing: template,
+        editType: "template"
+      });
+    }
   };
 
   changeEditType = event => {
@@ -65,7 +84,7 @@ class Menu extends React.Component {
       template
     } = this.state;
     if (editType === "connection") {
-      if (savedConnections.indexOf(nowEditing) === -1) {
+      if (savedConnections.indexOf(nowEditing) === -1 && savedConnections.indexOf(connection) === -1) {
         savedConnections.push(connection);
       } else {
         savedConnections[savedConnections.indexOf(nowEditing)] = connection;
@@ -78,7 +97,7 @@ class Menu extends React.Component {
       connection = "";
       this.setState({ savedConnections, nowEditing, connection });
     } else {
-      if (templates.indexOf(nowEditing) === -1) {
+      if (templates.indexOf(nowEditing) === -1  && savedConnections.indexOf(template) === -1) {
         templates.push(template);
       } else {
         templates[templates.indexOf(nowEditing)] = template;
@@ -90,13 +109,22 @@ class Menu extends React.Component {
     }
   };
 
-  handleDeleteSavedUrl = event => {
+  handleDeleteItem = (event, type) => {
     event.preventDefault();
-    const { savedConnections } = this.state;
-    savedConnections.splice(savedConnections.indexOf(event.target.value), 1);
-    this.setState({ savedConnections });
-    localStorage.setItem("savedConnections", JSON.stringify(savedConnections));
-    console.log("DELETE" + event.target.value);
+    if (type === "connection") {
+      const { savedConnections } = this.state;
+      savedConnections.splice(savedConnections.indexOf(event.target.firstChild.data), 1);
+      this.setState({ savedConnections });
+      localStorage.setItem(
+        "savedConnections",
+        JSON.stringify(savedConnections)
+      );
+    } else {
+      const { templates } = this.state;
+      templates.splice(templates.indexOf(event.target.firstChild.data), 1);
+      this.setState({ templates });
+      localStorage.setItem("templates", JSON.stringify(templates));      
+    }
   };
 
   render() {
@@ -120,6 +148,7 @@ class Menu extends React.Component {
               saveOrEdit={this.saveOrEdit}
               title="Saved Connections"
               changeEditType={this.changeEditType}
+              handleDeleteItem={this.handleDeleteItem}
             />
             <hr />
             <EditForm
@@ -131,6 +160,7 @@ class Menu extends React.Component {
               selectItem={this.editTemplate}
               saveOrEdit={this.saveOrEdit}
               changeEditType={this.changeEditType}
+              handleDeleteItem={this.handleDeleteItem}
             />
           </>
         )}

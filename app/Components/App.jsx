@@ -34,7 +34,9 @@ class App extends React.Component {
 
   handleKAChange = event => {
     event.preventDefault();
-    const kaInterval = setInterval(() => {
+    let {kaInterval} = this.state;
+    clearInterval(kaInterval);
+    kaInterval = setInterval(() => {
       this.state.ws.send(this.state.kaMessage);
     }, 3000);
     this.setState({ kaInterval });
@@ -65,22 +67,20 @@ class App extends React.Component {
   };
 
   handleConnectSubmit = event => {
-    var { ws, sendButtonDisabled, kaInterval } = this.state;
-    let connectButtonText, connectButtonClass;
+    var { ws, kaInterval } = this.state;
     event.preventDefault();
 
     if (ws == null || ws == undefined || ws.readyState == 0) {
       ws = new WebSocket(this.state.url);
+      kaInterval && clearInterval(kaInterval);
       this.registerWsHandlers(ws);
     } else {
       ws.close();
+      kaInterval && clearInterval(kaInterval);
     }
 
     this.setState({
       ws,
-      connectButtonText,
-      connectButtonClass,
-      sendButtonDisabled,
       kaInterval
     });
   };
@@ -121,12 +121,12 @@ class App extends React.Component {
     };
 
     ws.onclose = event => {
-      console.log("WS closed");
-      ws = null;
+      console.log("WS closed");     
       sendButtonDisabled = !sendButtonDisabled;
       connectButtonText = "Connect";
       connectButtonClass = "primary";
       kaInterval && clearInterval(kaInterval);
+      ws = null;
       this.setState({
         ws,
         connectButtonText,
