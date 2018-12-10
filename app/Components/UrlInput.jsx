@@ -52,9 +52,10 @@ const UrlInput = ({
               componentClass="select"
               placeholder="select"
               onChange={copySavedUrl}
+              defaultValue = "select"
             >
               {" "}
-              <option disabled selected value="select...">
+              <option disabled value="select">
                 Select...
               </option>
               {savedConnections &&
