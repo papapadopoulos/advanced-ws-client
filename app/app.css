@@ -39,3 +39,8 @@
 .zeropadding {
     padding:0px;
 }
+
+.align-center {
+    margin-left: 20px; 
+    text-align: center;
+}

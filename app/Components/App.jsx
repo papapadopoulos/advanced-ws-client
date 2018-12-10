@@ -12,7 +12,7 @@ class App extends React.Component {
   state = {
     message: "no message",
     kaMessage: "",
-    url: "wss://echo.websocket.org",
+    url: "ws://echo.websocket.org",
     connectButtonText: "Connect",
     connectButtonClass: "primary",
     sendButtonDisabled: true,
@@ -71,19 +71,9 @@ class App extends React.Component {
 
     if (ws == null || ws == undefined || ws.readyState == 0) {
       ws = new WebSocket(this.state.url);
-      console.log("WS Connected");
       this.registerWsHandlers(ws);
-      connectButtonClass = "danger";
-      connectButtonText = "Disconnect";
-      sendButtonDisabled = !sendButtonDisabled;
-      kaInterval && clearInterval(kaInterval);
     } else {
       ws.close();
-      ws = null;
-      sendButtonDisabled = !sendButtonDisabled;
-      connectButtonText = "Connect";
-      connectButtonClass = "primary";
-      kaInterval && clearInterval(kaInterval);
     }
 
     this.setState({
@@ -102,12 +92,23 @@ class App extends React.Component {
   };
 
   registerWsHandlers = ws => {
+    var { sendButtonDisabled, kaInterval } = this.state;
+    let connectButtonText, connectButtonClass;
     ws.onopen = event => {
-      console.log(event);
-      ws.send("Here's some text that the server is urgently awaiting!");
+      console.log("WS opened");
+      connectButtonClass = "danger";
+      connectButtonText = "Disconnect";
+      sendButtonDisabled = !sendButtonDisabled;
+      kaInterval && clearInterval(kaInterval);
+      this.setState({
+        ws,
+        connectButtonText,
+        connectButtonClass,
+        sendButtonDisabled,
+        kaInterval
+      });
     };
     ws.onmessage = message => {
-      console.log(message.data);
       const { responseMessages } = this.state;
       var responseMessage = {
         id: Math.random()
@@ -121,11 +122,22 @@ class App extends React.Component {
 
     ws.onclose = event => {
       console.log("WS closed");
+      ws = null;
+      sendButtonDisabled = !sendButtonDisabled;
+      connectButtonText = "Connect";
+      connectButtonClass = "primary";
+      kaInterval && clearInterval(kaInterval);
+      this.setState({
+        ws,
+        connectButtonText,
+        connectButtonClass,
+        sendButtonDisabled,
+        kaInterval
+      });
     };
   };
 
   clearMessages = event => {
-    console.log("Celar" + event);
     var { responseMessages } = this.state;
     responseMessages = [];
     this.setState({ responseMessages });
@@ -137,9 +149,9 @@ class App extends React.Component {
     });
   };
 
-  copyTemplate = (template) => {
-    this.setState({inputMessage: template});
-  }
+  copyTemplate = template => {
+    this.setState({ inputMessage: template });
+  };
 
   render() {
     const {
@@ -155,7 +167,6 @@ class App extends React.Component {
       showMenu,
       templates
     } = this.state;
-    console.log(message);
     return (
       <>
         <NavigationBar toggleShowMenu={this.toggleShowMenu} />
@@ -199,7 +210,10 @@ class App extends React.Component {
               </Col>
 
               <Col sm={11} md={6} lg={4}>
-                <TemplateArea templates={templates} copyTemplate={this.copyTemplate}/>
+                <TemplateArea
+                  templates={templates}
+                  copyTemplate={this.copyTemplate}
+                />
               </Col>
             </Row>
             <Row>
@@ -207,6 +221,8 @@ class App extends React.Component {
                 <MessageArea
                   messages={responseMessages}
                   clearMessages={this.clearMessages}
+                  disconnected={sendButtonDisabled}
+                  url={url}
                 />
               </Col>
             </Row>

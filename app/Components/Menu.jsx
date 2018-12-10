@@ -51,9 +51,8 @@ class Menu extends React.Component {
   };
 
   changeEditType = event => {
-  
-      this.setState({editType: event.target.name});
-  }
+    this.setState({ editType: event.target.name });
+  };
 
   saveOrEdit = event => {
     event.preventDefault();

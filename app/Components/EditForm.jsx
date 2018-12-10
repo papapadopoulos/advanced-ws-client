@@ -30,13 +30,13 @@ const EditForm = ({
       <ListGroup bsClass="connectionsContainer">
         {itemList &&
           itemList.map(s => (
-            <ListGroupItem key={s} value={s} onClick={() => selectItem(s)}>
+            <ListGroupItem key={s} onClick={() => selectItem(s)}>
               {s}
             </ListGroupItem>
           ))}
       </ListGroup>
 
-      {(
+      {
         <form onSubmit={saveOrEdit}>
           <Grid>
             <Row>
@@ -59,7 +59,7 @@ const EditForm = ({
             </Row>
           </Grid>
         </form>
-      )}
+      }
     </>
   );
 };

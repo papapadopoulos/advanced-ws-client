@@ -1,28 +1,24 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Panel, ListGroup, ListGroupItem, Button } from "react-bootstrap";
 
 class MessageArea extends React.Component {
   constructor() {
     super();
-    this.messageList = React.createRef();
+    this.messageItem = React.createRef();
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-
-  // }
-
-  copyToClipboard = (e) => {
-    console.log(e.value);
-    this.messageItem.props.children.select();
+  copyToClipboard = e => {
+    const textField = document.createElement("textarea");
+    textField.innerText = e.target.firstChild.data;
+    document.body.appendChild(textField);
+    textField.select();
     document.execCommand("copy");
-    // This is just personal preference.
-    // I prefer to not show the the whole text area selected.
-    e.target.focus();
-    // this.setState({ copySuccess: 'Copied!' });
+    textField.remove();
   };
 
   render() {
     const messages = this.props.messages.slice();
+    const { url, disconnected } = this.props;
     // messages.reverse();
 
     return (
@@ -30,7 +26,15 @@ class MessageArea extends React.Component {
         <Panel.Heading>
           <Panel.Title componentClass="h2">
             Messages
-            <Button className="pull-right zeropadding" bsStyle="link" type="submit" onClick={this.props.clearMessages}>
+            <small className="align-center">
+              {!disconnected ? "Connected to: " + url : "Disconnected"}
+            </small>
+            <Button
+              className="pull-right zeropadding"
+              bsStyle="link"
+              type="submit"
+              onClick={this.props.clearMessages}
+            >
               Clear
             </Button>
           </Panel.Title>
@@ -41,7 +45,13 @@ class MessageArea extends React.Component {
             .reverse()
             .slice(0, 50)
             .map(m => (
-              <ListGroupItem onClick={this.copyToClipboard} ref={(messageItem) => this.messageItem = messageItem} key={m.id}>{m.message}</ListGroupItem>
+              <ListGroupItem
+                onClick={this.copyToClipboard}
+                ref={this.messageItem}
+                key={m.id}
+              >
+                {m.message}
+              </ListGroupItem>
             ))}
         </ListGroup>
       </Panel>
